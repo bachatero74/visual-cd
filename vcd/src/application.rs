@@ -1,23 +1,20 @@
 use crossterm::event::{self, Event, KeyCode, KeyEventKind};
 use ratatui::{
-    layout::Margin, style::{Color, Modifier, Style, Stylize}, text::Line, widgets::{
-        Block, Borders, Paragraph, Scrollbar, ScrollbarOrientation, ScrollbarState,
-    }, DefaultTerminal, Frame
+    DefaultTerminal, Frame,
+    layout::Margin,
+    style::{Color, Modifier, Style, Stylize},
+    text::Line,
+    widgets::{Block, Borders, Paragraph, Scrollbar, ScrollbarOrientation, ScrollbarState},
 };
-use std::
-    io::{self}
-;
+use std::io::{self};
 
 pub struct Application {
     counter: u8,
-  
 }
 
 impl Application {
     pub fn new() -> Self {
-        Application {
-            counter: 0,
-        }
+        Application { counter: 0 }
     }
 
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> io::Result<()> {
@@ -45,11 +42,7 @@ impl Application {
                     i
                 ));
 
-                if i == 65 {
-                    line.bg(Color::Blue)
-                } else {
-                    line
-                }
+                if i == 65 { line.bg(Color::Blue) } else { line }
             })
             .collect();
 
