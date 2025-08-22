@@ -8,6 +8,8 @@ use ratatui::{
 };
 use std::io::{self};
 
+use crate::errors::AppError;
+
 pub struct Application {
     counter: u8,
 }
@@ -17,7 +19,7 @@ impl Application {
         Application { counter: 0 }
     }
 
-    pub fn run(&mut self, terminal: &mut DefaultTerminal) -> io::Result<()> {
+    pub fn run(&mut self, terminal: &mut DefaultTerminal) -> Result<(), AppError> {
         loop {
             terminal.draw(|frame| self.draw(frame))?;
             match event::read()? {
