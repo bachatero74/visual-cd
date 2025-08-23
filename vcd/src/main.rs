@@ -4,14 +4,14 @@ mod filesystem;
 mod structures;
 
 use application::Application;
-use log::info;
+use log::{info, warn};
 
 use errors::AppError;
 
 fn main() {
     if let Err(err) = run() {
         println!("{}", err);
-    }
+    }    
 }
 fn run() -> Result<(), AppError> {
     setup_logger()?;
