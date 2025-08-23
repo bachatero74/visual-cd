@@ -1,9 +1,10 @@
 mod application;
 mod errors;
+mod filesystem;
+mod structures;
 
 use application::Application;
 use log::info;
-use std::io;
 
 use errors::AppError;
 
@@ -32,9 +33,7 @@ fn setup_logger() -> Result<(), AppError> {
             ))
         })
         .level(log::LevelFilter::Info)
-        .chain(
-            fern::log_file("output.log").map_err(|_| AppError::StatStr("Cannot open log file"))?,
-        )
+        .chain(fern::log_file("output.log").map_err(|_| AppError::StatStr("Cannot open log file"))?)
         .apply()?;
     Ok(())
 }

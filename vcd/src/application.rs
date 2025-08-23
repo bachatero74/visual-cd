@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use crossterm::event::{self, Event, KeyCode, KeyEventKind};
 use ratatui::{
     DefaultTerminal, Frame,
@@ -6,20 +8,28 @@ use ratatui::{
     text::Line,
     widgets::{Block, Borders, Paragraph, Scrollbar, ScrollbarOrientation, ScrollbarState},
 };
-use std::io::{self};
 
-use crate::errors::AppError;
+use crate::{
+    errors::AppError,
+    filesystem::load_tree,
+    structures::{FileNode, TVItem, TreeNode},
+};
 
 pub struct Application {
-    counter: u8,
+    root: Rc<TreeNode>,
+    tv_items: Vec<TVItem>,
 }
 
 impl Application {
     pub fn new() -> Self {
-        Application { counter: 0 }
+        Application {
+            root: load_tree(),
+            tv_items: Vec::new(),
+        }
     }
 
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> Result<(), AppError> {
+        self.render_tree_view();
         loop {
             terminal.draw(|frame| self.draw(frame))?;
             match event::read()? {
@@ -34,6 +44,10 @@ impl Application {
             };
         }
         Ok(())
+    }
+
+    fn render_tree_view(&mut self){
+        self.tv_items.clear();
     }
 
     fn draw(&mut self, frame: &mut Frame) {
