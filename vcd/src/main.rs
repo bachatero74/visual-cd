@@ -11,7 +11,7 @@ use errors::AppError;
 fn main() {
     if let Err(err) = run() {
         println!("{}", err);
-    }    
+    }
 }
 fn run() -> Result<(), AppError> {
     setup_logger()?;

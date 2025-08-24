@@ -1,6 +1,7 @@
 use std::rc::Rc;
 
 use crossterm::event::{self, Event, KeyCode, KeyEventKind};
+use log::info;
 use ratatui::{
     DefaultTerminal, Frame,
     layout::Margin,
@@ -11,30 +12,39 @@ use ratatui::{
 
 use crate::{
     errors::AppError,
-    filesystem::load_tree,
     structures::{FileNode, TVItem, TreeNode},
 };
 
 pub struct Application {
     root: Rc<TreeNode>,
     tv_items: Vec<TVItem>,
+    cursor: usize,
 }
 
 impl Application {
     pub fn new() -> Self {
-        Application {
-            root: load_tree(),
+        let root = TreeNode::new(FileNode {
+            name: String::from("/"),
+        });
+        root.load();
+
+        let mut app = Application {
+            root: Rc::new(root),
             tv_items: Vec::new(),
-        }
+            cursor: 0,
+        };
+        app.render_tree_view();
+        assert!(app.tv_items.len() > 0, "No tree view items");
+        app
     }
 
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> Result<(), AppError> {
-        self.render_tree_view();
         loop {
             terminal.draw(|frame| self.draw(frame))?;
             match event::read()? {
                 Event::Key(key_event) if key_event.kind == KeyEventKind::Press => {
                     match key_event.code {
+                        KeyCode::Down => info!("Down"),
                         KeyCode::Char('q') => break,
                         KeyCode::Enter => break,
                         _ => {}
@@ -46,21 +56,25 @@ impl Application {
         Ok(())
     }
 
-    fn render_tree_view(&mut self){
+    fn render_tree_view(&mut self) {
         self.tv_items.clear();
+        self.tv_items.push(TVItem {
+            tree_node: Rc::clone(&self.root),
+            drawing: "".to_string(),
+        });
     }
 
     fn draw(&mut self, frame: &mut Frame) {
-        let items: Vec<Line> = (1..100)
+        let mut items: Vec<Line> = (1..100)
             .map(|i| {
-                let line = Line::from(format!(
+                Line::from(format!(
                     "├─────────────────┬──┐ ▸ Baaaaaaaaaardzo dłuuuuuuga linia {}",
                     i
-                ));
-
-                if i == 65 { line.bg(Color::Blue) } else { line }
+                ))
             })
             .collect();
+
+        items[65] = items[65].clone().bg(Color::Blue);
 
         let par = Paragraph::new(items)
             .block(
