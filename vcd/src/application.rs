@@ -1,4 +1,4 @@
-use std::rc::Rc;
+use std::{ffi::OsString, rc::Rc};
 
 use crossterm::event::{self, Event, KeyCode, KeyEventKind};
 use log::info;
@@ -23,13 +23,13 @@ pub struct Application {
 
 impl Application {
     pub fn new() -> Self {
-        let root = TreeNode::new(FileNode {
-            name: String::from("/"),
-        });
+        let root = Rc::new(TreeNode::new(FileNode {
+            name: OsString::from("/"),
+        }));
         root.load();
 
         let mut app = Application {
-            root: Rc::new(root),
+            root,
             tv_items: Vec::new(),
             cursor: 0,
         };
@@ -39,6 +39,11 @@ impl Application {
     }
 
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> Result<(), AppError> {
+        if let Some(ref sns) = *self.root.subnodes.borrow() {
+            let tn = &sns[1];
+            info!("{}", tn.get_path().to_string_lossy());
+        }
+
         loop {
             terminal.draw(|frame| self.draw(frame))?;
             match event::read()? {

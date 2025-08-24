@@ -1,14 +1,14 @@
-use std::{cell::RefCell, rc::Rc};
+use std::{cell::RefCell, ffi::OsString, rc::Rc};
 
 use crate::structures::{FileNode, TreeNode};
 
 pub fn read_dir(parent: &str) -> impl Iterator<Item = TreeNode> {
     let home = TreeNode::new(FileNode {
-        name: String::from("home"),
+        name: OsString::from("home"),
     });
 
     let bin = TreeNode::new(FileNode {
-        name: String::from("bin"),
+        name: OsString::from("bin"),
     });
 
     vec![bin, home].into_iter()
