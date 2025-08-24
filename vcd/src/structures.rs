@@ -22,14 +22,17 @@ impl TreeNode {
     }
 
     pub fn load(&self) {
-        if self.subnodes.borrow().is_none() {
-            *self.subnodes.borrow_mut() =
-                Some(read_dir("").into_iter().map(|n| Rc::new(n)).collect());
-        }
-        if let Some(ref v)=*self.subnodes.borrow() {
-            for i in v { info!("{}",i.file_node.name); }
+        let mut opt_nodes = self.subnodes.borrow_mut();
+        if opt_nodes.is_none() {
+            *opt_nodes = Some(read_dir("").map(|n| Rc::new(n)).collect());
         }
     }
+
+    pub fn unload(&self) {
+        let mut opt_nodes = self.subnodes.borrow_mut();
+        *opt_nodes = None;
+    }
+
 }
 
 pub struct TVItem {
