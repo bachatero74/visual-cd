@@ -59,35 +59,52 @@ impl Application {
     }
 
     fn render_tree_view(&mut self) {
+        fn add_node(list: &mut Vec<TVItem>, node: &Rc<TreeNode>, level: usize) {
+            list.push(TVItem {
+                tree_node: Rc::clone(node),
+                drawing: " ".repeat(4 * level),
+            });
+            if let Some(ref sns) = *node.subnodes.borrow() {
+                for subn in sns {
+                    add_node(list, subn, level + 1);
+                }
+            }
+        }
+
         self.tv_items.clear();
-        self.tv_items.push(TVItem {
-            tree_node: Rc::clone(&self.root),
-            drawing: "".to_string(),
-        });
+        add_node(&mut self.tv_items, &self.root, 0);
     }
 
     fn draw(&mut self, frame: &mut Frame) {
-        let mut items: Vec<Line> = (1..100)
-            .map(|i| {
+        let mut items: Vec<Line> = self
+            .tv_items
+            .iter()
+            .map(|tvi| {
                 Line::from(format!(
-                    "├─────────────────┬──┐ ▸ Baaaaaaaaaardzo dłuuuuuuga linia {}",
-                    i
+                    "{} {} {}",
+                    tvi.drawing,
+                    "▸",
+                    tvi.tree_node.file_node.name.to_string_lossy(),
                 ))
             })
             .collect();
 
-        items[65] = items[65].clone().bg(Color::Blue);
+        if let Some(curs) = self.cursor {
+            if curs < items.len() {
+                items[curs] = items[curs].clone().bg(Color::Blue);
+            }
+        }
 
         let par = Paragraph::new(items)
             .block(
                 Block::default()
-                    .title("Directory navigator")
-                    .title_bottom("/home/jacek")
+                    .title("Visual cd")
+                    .title_bottom("")
                     .title_style(Style::default().add_modifier(Modifier::REVERSED))
                     .borders(Borders::ALL)
                     .border_style(Style::new().gray()),
             )
-            .scroll((50, 0));
+            .scroll((0, 0));
         frame.render_widget(par, frame.area());
 
         let mut scrollbar_state = ScrollbarState::new(99).position(50);
