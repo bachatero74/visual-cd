@@ -1,4 +1,4 @@
-use std::{ffi::OsString, rc::Rc};
+use std::{borrow::Cow, ffi::OsString, rc::Rc};
 
 use crossterm::event::{self, Event, KeyCode, KeyEventKind};
 use log::info;
@@ -89,12 +89,17 @@ impl Application {
         if self.cursor < items.len() {
             items[self.cursor] = items[self.cursor].clone().bg(Color::Blue);
         }
+        let current_path = if let Some(tv_item) = self.tv_items.get(self.cursor) {
+            tv_item.tree_node.get_path().to_string_lossy().to_string()
+        } else {
+            String::from("?") // 
+        };
 
         let par = Paragraph::new(items)
             .block(
                 Block::default()
                     .title("Visual cd")
-                    .title_bottom("")
+                    .title_bottom(current_path)
                     .title_style(Style::default().add_modifier(Modifier::REVERSED))
                     .borders(Borders::ALL)
                     .border_style(Style::new().gray()),

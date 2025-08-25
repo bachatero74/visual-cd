@@ -1,8 +1,15 @@
-use std::ffi::OsString;
+use std::{ffi::OsString, fs, path::Path};
 
-use crate::structures::{FileNode, TreeNode};
+use log::info;
 
-pub fn read_dir(parent: &str) -> impl Iterator<Item = TreeNode> {
+use crate::{
+    errors::AppError,
+    structures::{FileNode, TreeNode},
+};
+
+pub fn read_dir(path: &Path) -> Result<impl Iterator<Item = TreeNode>, AppError> {
+    info!("reading {}", path.display());
+
     let home = TreeNode::new(FileNode {
         name: OsString::from("home"),
     });
@@ -11,5 +18,10 @@ pub fn read_dir(parent: &str) -> impl Iterator<Item = TreeNode> {
         name: OsString::from("bin"),
     });
 
-    vec![bin, home].into_iter()
+    if true {
+    Ok(vec![bin, home].into_iter())
+    }
+    else{
+    Err(AppError::StatStr(""))
+    }
 }
