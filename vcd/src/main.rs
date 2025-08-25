@@ -4,7 +4,7 @@ mod filesystem;
 mod structures;
 
 use application::Application;
-use log::{info, warn};
+use log::info;
 
 use errors::AppError;
 

@@ -18,7 +18,7 @@ use crate::{
 pub struct Application {
     root: Rc<TreeNode>,
     tv_items: Vec<TVItem>,
-    cursor: usize,
+    cursor: Option<usize>,
 }
 
 impl Application {
@@ -26,22 +26,19 @@ impl Application {
         let root = Rc::new(TreeNode::new(FileNode {
             name: OsString::from("/"),
         }));
-        root.load();
 
-        let mut app = Application {
+        Application {
             root,
             tv_items: Vec::new(),
-            cursor: 0,
-        };
-        app.render_tree_view();
-        assert!(app.tv_items.len() > 0, "No tree view items");
-        app
+            cursor: None,
+        }
     }
 
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> Result<(), AppError> {
-        if let Some(ref sns) = *self.root.subnodes.borrow() {
-            let tn = &sns[1];
-            info!("{}", tn.get_path().to_string_lossy());
+        self.root.load();
+        self.render_tree_view();
+        if self.tv_items.len() > 0 {
+            self.cursor = Some(0);
         }
 
         loop {

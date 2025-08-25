@@ -1,4 +1,4 @@
-use std::{cell::RefCell, ffi::OsString, rc::Rc};
+use std::ffi::OsString;
 
 use crate::structures::{FileNode, TreeNode};
 

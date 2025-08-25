@@ -1,7 +1,7 @@
 use std::{
     cell::RefCell,
     ffi::OsString,
-    path::{Path, PathBuf},
+    path::PathBuf,
     rc::{Rc, Weak},
 };
 
