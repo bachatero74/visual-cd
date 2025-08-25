@@ -18,7 +18,7 @@ use crate::{
 pub struct Application {
     root: Rc<TreeNode>,
     tv_items: Vec<TVItem>,
-    cursor: Option<usize>,
+    cursor: usize,
 }
 
 impl Application {
@@ -30,16 +30,13 @@ impl Application {
         Application {
             root,
             tv_items: Vec::new(),
-            cursor: None,
+            cursor: 0,
         }
     }
 
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> Result<(), AppError> {
         self.root.load();
         self.render_tree_view();
-        if self.tv_items.len() > 0 {
-            self.cursor = Some(0);
-        }
 
         loop {
             terminal.draw(|frame| self.draw(frame))?;
@@ -89,10 +86,8 @@ impl Application {
             })
             .collect();
 
-        if let Some(curs) = self.cursor {
-            if curs < items.len() {
-                items[curs] = items[curs].clone().bg(Color::Blue);
-            }
+        if self.cursor < items.len() {
+            items[self.cursor] = items[self.cursor].clone().bg(Color::Blue);
         }
 
         let par = Paragraph::new(items)
