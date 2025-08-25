@@ -42,16 +42,16 @@ impl TreeNode {
         }
     }
 
-    fn get_path_elements(&self, path: &mut PathBuf) {
-        if let Some(parent) = self.parent.upgrade() {
-            parent.get_path_elements(path);
+    pub fn get_path(self: &Rc<TreeNode>) -> PathBuf {
+        fn collect_path(node: &Rc<TreeNode>, path: &mut PathBuf) {
+            if let Some(parent) = node.parent.upgrade() {
+                collect_path(&parent, path);
+            }
+            path.push(&node.file_node.name);
         }
-        path.push(&self.file_node.name);
-    }
 
-    pub fn get_path(&self) -> PathBuf {
         let mut path = PathBuf::new();
-        self.get_path_elements(&mut path);
+        collect_path(self, &mut path);
         path
     }
 
