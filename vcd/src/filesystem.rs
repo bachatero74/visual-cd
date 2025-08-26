@@ -1,27 +1,33 @@
-use std::{ffi::OsString, fs, path::Path};
+use std::{
+    fs::{self, DirEntry},
+    path::Path,
+};
 
 use log::info;
 
-use crate::{
-    errors::AppError,
-    structures::{FileNode, TreeNode},
-};
+use crate::{errors::AppError, structures::FileNode};
 
-pub fn read_dir(path: &Path) -> Result<impl Iterator<Item = TreeNode>, AppError> {
+pub fn read_dir(path: &Path) -> Result<impl Iterator<Item = FileNode>, AppError> {
     info!("reading {}", path.display());
 
-    let home = TreeNode::new(FileNode {
-        name: OsString::from("home"),
-    });
+    Ok(fs::read_dir(path)?
+        .filter_map(|entry| entry.ok())
+        .filter(|entry| match entry.file_type() {
+            Ok(ft) => ft.is_dir(),
+            Err(_) => false,
+        })
+        .map(|e| FileNode {
+            name: e.file_name(),
+        }))
+}
 
-    let bin = TreeNode::new(FileNode {
-        name: OsString::from("bin"),
-    });
+pub fn read_dir2(path: &Path) -> Result<impl Iterator<Item = DirEntry>, AppError> {
+    info!("reading {}", path.display());
 
-    if true {
-    Ok(vec![bin, home].into_iter())
-    }
-    else{
-    Err(AppError::StatStr(""))
-    }
+    Ok(fs::read_dir(path)?
+        .filter_map(|entry| entry.ok())
+        .filter(|entry| match entry.file_type() {
+            Ok(ft) => ft.is_dir(),
+            Err(_) => false,
+        }))
 }

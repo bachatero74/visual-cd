@@ -32,12 +32,14 @@ impl TreeNode {
         let mut opt_nodes = self.subnodes.borrow_mut();
         if opt_nodes.is_none() {
             if let Ok(dir_iter) =
-                read_dir(&self.get_path()).inspect_err(|e| info!("Failed to read <path>")) {
+                read_dir(&self.get_path()).inspect_err(|e| info!("Failed to read <path>"))
+            {
                 *opt_nodes = Some(
                     dir_iter
-                        .map(|mut n| {
-                            n.parent = Rc::downgrade(self);
-                            Rc::new(n)
+                        .map(|n| {
+                            let mut tn = TreeNode::new(n);
+                            tn.parent = Rc::downgrade(self);
+                            Rc::new(tn)
                         })
                         .collect(),
                 );
