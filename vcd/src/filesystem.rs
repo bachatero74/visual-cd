@@ -21,13 +21,3 @@ pub fn read_dir(path: &Path) -> Result<impl Iterator<Item = FileNode>, AppError>
         }))
 }
 
-pub fn read_dir2(path: &Path) -> Result<impl Iterator<Item = DirEntry>, AppError> {
-    info!("reading {}", path.display());
-
-    Ok(fs::read_dir(path)?
-        .filter_map(|entry| entry.ok())
-        .filter(|entry| match entry.file_type() {
-            Ok(ft) => ft.is_dir(),
-            Err(_) => false,
-        }))
-}
