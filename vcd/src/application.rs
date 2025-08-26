@@ -12,6 +12,7 @@ use ratatui::{
 
 use crate::{
     errors::AppError,
+    filesystem::get_current_root,
     structures::{FileNode, TVItem, TreeNode},
 };
 
@@ -22,16 +23,16 @@ pub struct Application {
 }
 
 impl Application {
-    pub fn new() -> Self {
+    pub fn new() -> Result<Self, AppError> {
         let root = Rc::new(TreeNode::new(FileNode {
-            name: OsString::from("A:\\"),
+            name: get_current_root()?,
         }));
 
-        Application {
+        Ok(Application {
             root,
             tv_items: Vec::new(),
             cursor: 0,
-        }
+        })
     }
 
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> Result<(), AppError> {

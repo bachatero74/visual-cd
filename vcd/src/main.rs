@@ -8,16 +8,20 @@ use log::info;
 
 use errors::AppError;
 
+
 fn main() {
     if let Err(err) = run() {
         println!("{}", err);
     }
 }
+
+// TODO: create struct Terminal with drop
 fn run() -> Result<(), AppError> {
     setup_logger()?;
     info!("App start");
+    let mut app = Application::new()?;
     let mut terminal = ratatui::init();
-    let res = Application::new().run(&mut terminal);
+    let res = app.run(&mut terminal);
     ratatui::restore();
     res
 }

@@ -32,7 +32,9 @@ impl TreeNode {
         let mut opt_nodes = self.subnodes.borrow_mut();
         if opt_nodes.is_none() {
             let my_path = self.get_path();
-            if let Ok(dir_iter) = read_dir(&my_path).inspect_err(|_| warn!("Failed to read {}", my_path.display())) {
+            if let Ok(dir_iter) =
+                read_dir(&my_path).inspect_err(|_| warn!("Failed to read {}", my_path.display()))
+            {
                 *opt_nodes = Some(
                     dir_iter
                         .map(|n| {
