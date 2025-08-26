@@ -24,7 +24,7 @@ pub struct Application {
 impl Application {
     pub fn new() -> Self {
         let root = Rc::new(TreeNode::new(FileNode {
-            name: OsString::from("c:\\"),
+            name: OsString::from("A:\\"),
         }));
 
         Application {

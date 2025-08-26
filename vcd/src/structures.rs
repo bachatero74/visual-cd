@@ -5,7 +5,7 @@ use std::{
     rc::{Rc, Weak},
 };
 
-use log::info;
+use log::{info, warn};
 
 use crate::filesystem::read_dir;
 
@@ -31,9 +31,8 @@ impl TreeNode {
     pub fn load(self: &Rc<TreeNode>) {
         let mut opt_nodes = self.subnodes.borrow_mut();
         if opt_nodes.is_none() {
-            if let Ok(dir_iter) =
-                read_dir(&self.get_path()).inspect_err(|e| info!("Failed to read <path>"))
-            {
+            let my_path = self.get_path();
+            if let Ok(dir_iter) = read_dir(&my_path).inspect_err(|_| warn!("Failed to read {}", my_path.display())) {
                 *opt_nodes = Some(
                     dir_iter
                         .map(|n| {

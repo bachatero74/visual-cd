@@ -20,4 +20,3 @@ pub fn read_dir(path: &Path) -> Result<impl Iterator<Item = FileNode>, AppError>
             name: e.file_name(),
         }))
 }
-
