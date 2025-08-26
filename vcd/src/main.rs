@@ -7,6 +7,7 @@ use application::Application;
 use log::info;
 
 use errors::AppError;
+use ratatui::DefaultTerminal;
 
 
 fn main() {
@@ -15,15 +16,11 @@ fn main() {
     }
 }
 
-// TODO: create struct Terminal with drop
 fn run() -> Result<(), AppError> {
     setup_logger()?;
     info!("App start");
-    let mut app = Application::new()?;
-    let mut terminal = ratatui::init();
-    let res = app.run(&mut terminal);
-    ratatui::restore();
-    res
+    let mut terminal = Terminal::new();
+    Application::new()?.run(&mut terminal.t)
 }
 
 fn setup_logger() -> Result<(), AppError> {
@@ -40,4 +37,20 @@ fn setup_logger() -> Result<(), AppError> {
         .chain(fern::log_file("output.log").map_err(|_| AppError::StatStr("Cannot open log file"))?)
         .apply()?;
     Ok(())
+}
+
+struct Terminal {
+    t: DefaultTerminal,
+}
+
+impl Terminal {
+    fn new()->Self {
+        Terminal { t: ratatui::init() }
+    }
+}
+
+impl Drop for Terminal {
+    fn drop(&mut self) {
+        ratatui::restore();
+    }
 }
