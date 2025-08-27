@@ -12,7 +12,7 @@ use ratatui::DefaultTerminal;
 
 fn main() {
     if let Err(err) = run() {
-        println!("{}", err);
+        println!("{err}");
     }
 }
 
