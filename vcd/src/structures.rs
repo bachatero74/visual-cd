@@ -48,8 +48,28 @@ impl TreeNode {
         }
     }
 
-    pub fn find(self: &Rc<TreeNode>, components: &Components) -> Result<Rc<TreeNode>, AppError> {
-        Ok(self.clone())
+    pub fn find(
+        self: &Rc<TreeNode>,
+        components: &mut Components,
+    ) -> Result<Rc<TreeNode>, AppError> {
+        if let Some(next) = components.next() {
+            self.load();
+            let subs = self.subnodes.borrow();
+            match *subs {
+                Some(ref subs) => {
+                    let name = next.as_os_str();
+                    let found = subs
+                        .iter()
+                        .find(|n| n.file_node.name == name)
+                        .ok_or(AppError::StatStr("Cannot find specified path"))?
+                        .clone();
+                    found.find(components)
+                }
+                None => Err(AppError::StatStr("Cannot find specified path")),
+            }
+        } else {
+            Ok(Rc::clone(self))
+        }
     }
 
     pub fn get_path(self: &Rc<TreeNode>) -> PathBuf {

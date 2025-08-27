@@ -1,4 +1,9 @@
-use std::{env, ffi::OsString, path::{Component, Components}, rc::Rc};
+use std::{
+    env,
+    ffi::OsString,
+    path::{Component, Components},
+    rc::Rc,
+};
 
 use crossterm::event::{self, Event, KeyCode, KeyEventKind};
 use log::info;
@@ -37,6 +42,7 @@ impl Application {
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> Result<(), AppError> {
         self.root.1.load();
         let node = self.find(&mut env::current_dir()?.components())?;
+    
         self.render_tree_view();
 
         loop {
@@ -124,22 +130,19 @@ impl Application {
 
     fn find(&self, components: &mut Components) -> Result<Rc<TreeNode>, AppError> {
         let msg = "Cannot find specified path";
-        let c=components.next().ok_or(AppError::StatStr(msg))?;
+        let c = components.next().ok_or(AppError::StatStr(msg))?;
         match c {
-            Component::Prefix(p)=>{
-                let prefix=self.root.0.as_ref().ok_or(AppError::StatStr(msg))?;
+            Component::Prefix(p) => {
+                let prefix = self.root.0.as_ref().ok_or(AppError::StatStr(msg))?;
                 if p.as_os_str() != prefix {
                     return Err(AppError::StatStr(msg));
                 }
-                match components.next().ok_or(AppError::StatStr(msg))?{
+                match components.next().ok_or(AppError::StatStr(msg))? {
                     Component::RootDir => self.root.1.find(components),
                     _ => Err(AppError::StatStr(msg)),
                 }
-                
-            },
-            Component::RootDir=>{ 
-                self.root.1.find(components)
-            },
+            }
+            Component::RootDir => self.root.1.find(components),
             _ => Err(AppError::StatStr(msg)),
         }
     }
