@@ -1,4 +1,4 @@
-use std::{borrow::Cow, ffi::OsString, rc::Rc};
+use std::rc::Rc;
 
 use crossterm::event::{self, Event, KeyCode, KeyEventKind};
 use log::info;

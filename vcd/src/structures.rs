@@ -5,7 +5,7 @@ use std::{
     rc::{Rc, Weak},
 };
 
-use log::{info, warn};
+use log::warn;
 
 use crate::filesystem::read_dir;
 

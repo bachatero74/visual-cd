@@ -1,7 +1,7 @@
 use std::{
     env,
-    ffi::{OsStr, OsString},
-    fs::{self, DirEntry},
+    ffi::OsString,
+    fs::{self},
     path::{Component, Path, PathBuf},
 };
 
