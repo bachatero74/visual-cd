@@ -9,7 +9,6 @@ use log::info;
 use errors::AppError;
 use ratatui::DefaultTerminal;
 
-
 fn main() {
     if let Err(err) = run() {
         println!("{err}");
@@ -44,7 +43,7 @@ struct Terminal {
 }
 
 impl Terminal {
-    fn new()->Self {
+    fn new() -> Self {
         Terminal { t: ratatui::init() }
     }
 }

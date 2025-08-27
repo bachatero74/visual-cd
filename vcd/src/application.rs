@@ -1,4 +1,4 @@
-use std::{ffi::OsStr, rc::Rc};
+use std::{env, ffi::OsString, path::{Component, Components}, rc::Rc};
 
 use crossterm::event::{self, Event, KeyCode, KeyEventKind};
 use log::info;
@@ -17,26 +17,26 @@ use crate::{
 };
 
 pub struct Application {
-    root: Rc<TreeNode>,
+    root: (Option<OsString>, Rc<TreeNode>),
     tv_items: Vec<TVItem>,
     cursor: usize,
 }
 
 impl Application {
     pub fn new() -> Result<Self, AppError> {
-        let root = Rc::new(TreeNode::new(FileNode {
-            name: get_current_root()?,
-        }));
+        let (prefix, root_name) = get_current_root()?;
+        let root = Rc::new(TreeNode::new(FileNode { name: root_name }));
 
         Ok(Application {
-            root,
+            root: (prefix, root),
             tv_items: Vec::new(),
             cursor: 0,
         })
     }
 
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> Result<(), AppError> {
-        self.root.load();
+        self.root.1.load();
+        let node = self.find(&mut env::current_dir()?.components())?;
         self.render_tree_view();
 
         loop {
@@ -70,7 +70,7 @@ impl Application {
         }
 
         self.tv_items.clear();
-        add_node(&mut self.tv_items, &self.root, 0);
+        add_node(&mut self.tv_items, &self.root.1, 0);
     }
 
     fn draw(&mut self, frame: &mut Frame) {
@@ -120,5 +120,27 @@ impl Application {
             }),
             &mut scrollbar_state,
         );
+    }
+
+    fn find(&self, components: &mut Components) -> Result<Rc<TreeNode>, AppError> {
+        let msg = "Cannot find specified path";
+        let c=components.next().ok_or(AppError::StatStr(msg))?;
+        match c {
+            Component::Prefix(p)=>{
+                let prefix=self.root.0.as_ref().ok_or(AppError::StatStr(msg))?;
+                if p.as_os_str() != prefix {
+                    return Err(AppError::StatStr(msg));
+                }
+                match components.next().ok_or(AppError::StatStr(msg))?{
+                    Component::RootDir => self.root.1.find(components),
+                    _ => Err(AppError::StatStr(msg)),
+                }
+                
+            },
+            Component::RootDir=>{ 
+                self.root.1.find(components)
+            },
+            _ => Err(AppError::StatStr(msg)),
+        }
     }
 }

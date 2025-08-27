@@ -48,8 +48,8 @@ impl TreeNode {
         }
     }
 
-    pub fn find(components: &Components)->Result<Rc<TreeNode>,AppError> {
-        todo!()
+    pub fn find(self: &Rc<TreeNode>, components: &Components) -> Result<Rc<TreeNode>, AppError> {
+        Ok(self.clone())
     }
 
     pub fn get_path(self: &Rc<TreeNode>) -> PathBuf {
