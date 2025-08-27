@@ -42,7 +42,7 @@ impl Application {
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> Result<(), AppError> {
         self.root.1.load();
         let node = self.find(&mut env::current_dir()?.components())?;
-    
+
         self.render_tree_view();
 
         loop {

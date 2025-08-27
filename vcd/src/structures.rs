@@ -61,8 +61,7 @@ impl TreeNode {
                     let found = subs
                         .iter()
                         .find(|n| n.file_node.name == name)
-                        .ok_or(AppError::StatStr("Cannot find specified path"))?
-                        .clone();
+                        .ok_or(AppError::StatStr("Cannot find specified path"))?;
                     found.find(components)
                 }
                 None => Err(AppError::StatStr("Cannot find specified path")),
