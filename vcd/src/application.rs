@@ -1,4 +1,4 @@
-use std::rc::Rc;
+use std::{ffi::OsStr, rc::Rc};
 
 use crossterm::event::{self, Event, KeyCode, KeyEventKind};
 use log::info;

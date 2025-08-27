@@ -1,13 +1,13 @@
 use std::{
     cell::RefCell,
     ffi::OsString,
-    path::PathBuf,
+    path::{Components, PathBuf},
     rc::{Rc, Weak},
 };
 
 use log::warn;
 
-use crate::filesystem::read_dir;
+use crate::{errors::AppError, filesystem::read_dir};
 
 pub struct FileNode {
     pub name: OsString,
@@ -46,6 +46,10 @@ impl TreeNode {
                 );
             }
         }
+    }
+
+    pub fn find(components: &Components)->Result<Rc<TreeNode>,AppError> {
+        todo!()
     }
 
     pub fn get_path(self: &Rc<TreeNode>) -> PathBuf {
