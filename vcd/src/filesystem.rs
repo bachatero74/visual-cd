@@ -35,3 +35,20 @@ pub fn get_current_root() -> Result<OsString, AppError> {
 
     Ok(path.into())
 }
+
+pub fn get_current_root3() -> Result<(Option<OsString>,OsString), AppError> {
+    let mut path=PathBuf::new();
+    let mut prefix: Option<OsString> = None;
+    for comp in env::current_dir()?.components(){
+        match comp {
+            Component::Prefix(p) => {
+                prefix = Some(p.as_os_str().into());
+                path.push(p.as_os_str()); 
+            },
+            Component::RootDir => { path.push(comp.as_os_str()); },
+            _ => break,
+        }
+    }
+
+    Ok((prefix, path.into(),))
+}
