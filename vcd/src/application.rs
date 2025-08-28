@@ -41,12 +41,13 @@ impl Application {
 
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> Result<(), AppError> {
         self.root.1.load();
-        match self.find(&mut env::current_dir()?.components()) {
-            Ok(node) => {},
+        let found = self.find(&mut env::current_dir()?.components());
+        self.render_tree_view();
+
+        match found {
+            Ok(node) => self.goto(&node),
             Err(e) => error!("Cannot navigate to current dir: {e}"),
         }
-
-        self.render_tree_view();
 
         loop {
             terminal.draw(|frame| self.draw(frame))?;
@@ -148,5 +149,13 @@ impl Application {
             Component::RootDir => self.root.1.find(components),
             _ => Err(AppError::StatStr(msg)),
         }
+    }
+
+    fn goto(&mut self, node: &Rc<TreeNode>) {
+        self.cursor = self
+            .tv_items
+            .iter()
+            .position(|tvi| Rc::ptr_eq(&tvi.tree_node, node))
+            .unwrap_or(self.cursor);
     }
 }
