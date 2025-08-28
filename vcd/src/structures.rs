@@ -48,10 +48,7 @@ impl TreeNode {
         }
     }
 
-    pub fn find(
-        self: &Rc<TreeNode>,
-        components: &mut Components,
-    ) -> Result<Rc<TreeNode>, AppError> {
+    pub fn find(self: &Rc<TreeNode>, components: &mut Components) -> Result<Rc<TreeNode>, AppError> {
         if let Some(next) = components.next() {
             self.load();
             let subs = self.subnodes.borrow();

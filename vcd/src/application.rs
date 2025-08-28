@@ -6,7 +6,7 @@ use std::{
 };
 
 use crossterm::event::{self, Event, KeyCode, KeyEventKind};
-use log::info;
+use log::{error, info};
 use ratatui::{
     DefaultTerminal, Frame,
     layout::Margin,
@@ -41,7 +41,10 @@ impl Application {
 
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> Result<(), AppError> {
         self.root.1.load();
-        let node = self.find(&mut env::current_dir()?.components())?;
+        match self.find(&mut env::current_dir()?.components()) {
+            Ok(node) => {},
+            Err(e) => error!("Cannot navigate to current dir: {e}"),
+        }
 
         self.render_tree_view();
 
