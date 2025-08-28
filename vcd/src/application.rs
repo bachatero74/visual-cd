@@ -102,11 +102,13 @@ impl Application {
         if self.cursor < items.len() {
             items[self.cursor] = items[self.cursor].clone().bg(Color::Blue);
         }
-        let current_path = if let Some(tv_item) = self.tv_items.get(self.cursor) {
-            tv_item.tree_node.get_path().to_string_lossy().to_string()
-        } else {
-            String::from("?") // 
-        };
+
+        let current_path = self
+            .tv_items
+            .get(self.cursor)
+            .map_or(String::from("?"), |tvi| {
+                tvi.tree_node.get_path().to_string_lossy().to_string()
+            });
 
         let par = Paragraph::new(items)
             .block(
@@ -140,12 +142,13 @@ impl Application {
         match c {
             Component::Prefix(p) => {
                 let prefix = self.root.0.as_ref().ok_or(AppError::StatStr(msg))?;
-                if p.as_os_str() != prefix {
-                    return Err(AppError::StatStr(msg));
-                }
-                match components.next().ok_or(AppError::StatStr(msg))? {
-                    Component::RootDir => self.root.1.find(components),
-                    _ => Err(AppError::StatStr(msg)),
+                if p.as_os_str() == prefix {
+                    match components.next().ok_or(AppError::StatStr(msg))? {
+                        Component::RootDir => self.root.1.find(components),
+                        _ => Err(AppError::StatStr(msg)),
+                    }
+                } else {
+                    Err(AppError::StatStr(msg))
                 }
             }
             Component::RootDir => self.root.1.find(components),
