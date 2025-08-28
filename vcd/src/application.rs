@@ -41,10 +41,12 @@ impl Application {
 
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> Result<(), AppError> {
         self.root.1.load();
-        let found = self.find(&mut env::current_dir()?.components());
-        self.render_tree_view();
 
-        match found {
+        match {
+            let found = self.find(&mut env::current_dir()?.components());
+            self.render_tree_view();
+            found
+        } {
             Ok(node) => self.goto(&node),
             Err(e) => error!("Cannot navigate to current dir: {e}"),
         }
