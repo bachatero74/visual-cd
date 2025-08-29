@@ -115,9 +115,9 @@ impl Application {
                 Block::default()
                     .title("Visual cd")
                     .title_bottom(current_path)
-                    .title_style(Style::default().add_modifier(Modifier::REVERSED))
+                    .title_style(Style::default().add_modifier(Modifier::REVERSED).fg(Color::Cyan))
                     .borders(Borders::ALL)
-                    .border_style(Style::new().gray()),
+                    .border_style(Style::new().cyan()),
             )
             .scroll((0, 0));
         frame.render_widget(par, frame.area());
