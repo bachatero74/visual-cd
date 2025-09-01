@@ -69,14 +69,34 @@ impl Application {
     }
 
     fn render_tree_view(&mut self) {
-        fn add_node(list: &mut Vec<TVItem>, node: &Rc<TreeNode>, level: usize, prevs_stack: &mut Vec<bool>, not_last: Option<bool>) {
+        fn add_node(
+            list: &mut Vec<TVItem>,
+            node: &Rc<TreeNode>,
+            prevs_stack: &mut Vec<bool>,
+            not_last: Option<bool>,
+        ) {
+            let lead: String = prevs_stack
+                .iter()
+                .map(|b| if *b { "│   " } else { "    " })
+                .collect();
+
+            let link = match not_last {
+                Some(tbc) => match tbc {
+                    true => "├───",
+                    false => "└───",
+                },
+                None => "",
+            };
             list.push(TVItem {
                 tree_node: Rc::clone(node),
-                drawing: " ".repeat(4 * level),
+                drawing: format!("{}{}", lead, link),
             });
+            if let Some(not_last) = not_last {
+                prevs_stack.push(not_last);
+            }
             if let Some(ref sns) = *node.subnodes.borrow() {
-                for (i,subn) in sns.iter().enumerate() {
-                    add_node(list, subn, level + 1, prevs_stack, Some(i<sns.len()-1));
+                for (i, subn) in sns.iter().enumerate() {
+                    add_node(list, subn, prevs_stack, Some(i < sns.len() - 1));
                 }
             }
             if not_last.is_some() {
@@ -86,7 +106,7 @@ impl Application {
 
         self.tv_items.clear();
         let mut prevs_stack = Vec::new();
-        add_node(&mut self.tv_items, &self.root.1, 0, &mut prevs_stack, None);
+        add_node(&mut self.tv_items, &self.root.1, &mut prevs_stack, None);
     }
 
     fn draw(&mut self, frame: &mut Frame) {
@@ -95,7 +115,7 @@ impl Application {
             .iter()
             .map(|tvi| {
                 Line::from(format!(
-                    "{} {} {}",
+                    "{}{} {}",
                     tvi.drawing,
                     "▸",
                     tvi.tree_node.file_node.name.to_string_lossy(),
@@ -119,7 +139,11 @@ impl Application {
                 Block::default()
                     .title("Visual cd")
                     .title_bottom(current_path)
-                    .title_style(Style::default().add_modifier(Modifier::REVERSED).fg(Color::Cyan))
+                    .title_style(
+                        Style::default()
+                            .add_modifier(Modifier::REVERSED)
+                            .fg(Color::Cyan),
+                    )
                     .borders(Borders::ALL)
                     .border_style(Style::new().cyan()),
             )
