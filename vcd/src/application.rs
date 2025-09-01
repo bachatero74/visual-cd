@@ -69,20 +69,24 @@ impl Application {
     }
 
     fn render_tree_view(&mut self) {
-        fn add_node(list: &mut Vec<TVItem>, node: &Rc<TreeNode>, level: usize) {
+        fn add_node(list: &mut Vec<TVItem>, node: &Rc<TreeNode>, level: usize, prevs_stack: &mut Vec<bool>, not_last: Option<bool>) {
             list.push(TVItem {
                 tree_node: Rc::clone(node),
                 drawing: " ".repeat(4 * level),
             });
             if let Some(ref sns) = *node.subnodes.borrow() {
-                for subn in sns {
-                    add_node(list, subn, level + 1);
+                for (i,subn) in sns.iter().enumerate() {
+                    add_node(list, subn, level + 1, prevs_stack, Some(i<sns.len()-1));
                 }
+            }
+            if not_last.is_some() {
+                prevs_stack.pop();
             }
         }
 
         self.tv_items.clear();
-        add_node(&mut self.tv_items, &self.root.1, 0);
+        let mut prevs_stack = Vec::new();
+        add_node(&mut self.tv_items, &self.root.1, 0, &mut prevs_stack, None);
     }
 
     fn draw(&mut self, frame: &mut Frame) {
