@@ -71,7 +71,16 @@ impl Application {
             match event::read()? {
                 Event::Key(key_event) if key_event.kind == KeyEventKind::Press => {
                     match key_event.code {
-                        KeyCode::Down => info!("Down"),
+                        KeyCode::Up => {
+                            if self.cursor > 0 {
+                                self.cursor -= 1;
+                            }
+                        }
+                        KeyCode::Down => {
+                            if self.cursor < self.tv_items.len() - 1 {
+                                self.cursor += 1;
+                            }
+                        }
                         KeyCode::Char('q') => break,
                         KeyCode::Enter => break,
                         _ => {}
@@ -83,6 +92,7 @@ impl Application {
         Ok(())
     }
 
+    // TODO: zweryfikować pozycję kursora, czy nie wyjeżdża poza zakres
     fn render_tree_view(&mut self) {
         fn add_node(
             list: &mut Vec<TVItem>,
@@ -153,11 +163,17 @@ impl Application {
                 tvi.tree_node.get_path().to_string_lossy().to_string()
             });
 
-        let location = self.cursor - self.display_offset;
-        let height = (frame.area().height - 2) as usize; // TODO: tak nie może być
+        if frame.area().height > 2 {
+            let location = self.cursor - self.display_offset;
+            let height = (frame.area().height - 2) as usize;
 
-        if location >= height - V_MARGIN {
-            self.display_offset = self.cursor - height + V_MARGIN + 1;
+            if location >= height - V_MARGIN {
+                self.display_offset = self.cursor - height + V_MARGIN + 1;
+            }
+
+            if location < V_MARGIN {
+                self.display_offset = self.cursor - V_MARGIN;
+            }
         }
 
         let par = Paragraph::new(items)
