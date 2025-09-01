@@ -21,6 +21,18 @@ use crate::{
     structures::{FileNode, TVItem, TreeNode},
 };
 
+const COLLAPSED_DIR: &str = "📁";
+const EXPANDED_DIR: &str = "📂";
+
+// const COLLAPSED_DIR: &str = "⊞ ";
+// const EXPANDED_DIR: &str = "⊟";
+
+// const COLLAPSED_DIR: &str = "▸";
+// const EXPANDED_DIR: &str = " ▾";
+
+// const COLLAPSED_DIR: &str = "+";
+// const EXPANDED_DIR: &str = "-";
+
 pub struct Application {
     root: (Option<OsString>, Rc<TreeNode>),
     tv_items: Vec<TVItem>,
@@ -117,7 +129,11 @@ impl Application {
                 Line::from(format!(
                     "{}{} {}",
                     tvi.drawing,
-                    "▸",
+                    if tvi.tree_node.subnodes.borrow().is_some() {
+                        EXPANDED_DIR
+                    } else {
+                        COLLAPSED_DIR
+                    },
                     tvi.tree_node.file_node.name.to_string_lossy(),
                 ))
             })
