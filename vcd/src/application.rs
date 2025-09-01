@@ -21,6 +21,7 @@ use crate::{
     structures::{FileNode, TVItem, TreeNode},
 };
 
+const V_MARGIN: usize = 1;
 const COLLAPSED_DIR: &str = "📁";
 const EXPANDED_DIR: &str = "📂";
 
@@ -37,6 +38,7 @@ pub struct Application {
     root: (Option<OsString>, Rc<TreeNode>),
     tv_items: Vec<TVItem>,
     cursor: usize,
+    display_offset: usize,
 }
 
 impl Application {
@@ -48,6 +50,7 @@ impl Application {
             root: (prefix, root),
             tv_items: Vec::new(),
             cursor: 0,
+            display_offset: 0,
         })
     }
 
@@ -150,6 +153,13 @@ impl Application {
                 tvi.tree_node.get_path().to_string_lossy().to_string()
             });
 
+        let location = self.cursor - self.display_offset;
+        let height = (frame.area().height - 2) as usize; // TODO: tak nie może być
+
+        if location >= height - V_MARGIN {
+            self.display_offset = self.cursor - height + V_MARGIN + 1;
+        }
+
         let par = Paragraph::new(items)
             .block(
                 Block::default()
@@ -163,7 +173,7 @@ impl Application {
                     .borders(Borders::ALL)
                     .border_style(Style::new().cyan()),
             )
-            .scroll((0, 0));
+            .scroll((self.display_offset as u16, 0));
         frame.render_widget(par, frame.area());
 
         let mut scrollbar_state = ScrollbarState::new(99).position(50);
