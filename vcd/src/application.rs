@@ -163,18 +163,7 @@ impl Application {
                 tvi.tree_node.get_path().to_string_lossy().to_string()
             });
 
-        if frame.area().height > 2 {
-            let location = self.cursor - self.display_offset;
-            let height = (frame.area().height - 2) as usize;
-
-            if location >= height - V_MARGIN {
-                self.display_offset = self.cursor - height + V_MARGIN + 1;
-            }
-
-            if location < V_MARGIN {
-                self.display_offset = self.cursor - V_MARGIN;
-            }
-        }
+        self.calc_offset(frame);
 
         let par = Paragraph::new(items)
             .block(
@@ -204,6 +193,21 @@ impl Application {
             }),
             &mut scrollbar_state,
         );
+    }
+
+    fn calc_offset(&mut self, frame: &Frame){
+        if frame.area().height > 2 {
+            let location = self.cursor - self.display_offset;
+            let height = (frame.area().height - 2) as usize;
+
+            if location >= height - V_MARGIN {
+                self.display_offset = self.cursor - height + V_MARGIN + 1;
+            }
+
+            if location < V_MARGIN {
+                self.display_offset = self.cursor - V_MARGIN;
+            }
+        }
     }
 
     fn find(&self, components: &mut Components) -> Result<Rc<TreeNode>, AppError> {
