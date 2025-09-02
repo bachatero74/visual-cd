@@ -131,7 +131,7 @@ impl Application {
         self.tv_items.clear();
         let mut prevs_stack = Vec::new();
         add_node(&mut self.tv_items, &self.root.1, &mut prevs_stack, None);
-        
+
         if self.cursor >= self.tv_items.len() as isize {
             self.cursor = (self.tv_items.len() as isize - 1).max(0);
         }
@@ -166,7 +166,7 @@ impl Application {
                 tvi.tree_node.get_path().to_string_lossy().to_string()
             });
 
-        self.calc_offset(frame);
+        self.display_offset = self.calc_offset(frame);
 
         let par = Paragraph::new(items)
             .block(
@@ -198,18 +198,24 @@ impl Application {
         );
     }
 
-    fn calc_offset(&mut self, frame: &Frame) {
+    fn calc_offset(&self, frame: &Frame) -> isize {
         let height = frame.area().height as isize - 2;
         if height > 0 {
             let location = self.cursor - self.display_offset;
             let margin = V_MARGIN.min(height / 2);
-
-            if location < margin {
-                self.display_offset = (self.cursor - margin).max(0);
-            } else if location >= height - margin {
-                let max_offs = (self.tv_items.len() as isize - height).max(0);
-                self.display_offset = (self.cursor - height + margin + 1).min(max_offs);
+            let max_offs = (self.tv_items.len() as isize - height).max(0);
+            {
+                if location < margin {
+                    self.cursor - margin
+                } else if location >= height - margin {
+                    self.cursor - height + margin + 1
+                } else {
+                    self.display_offset
+                }
             }
+            .clamp(0, max_offs)
+        } else {
+            self.display_offset
         }
     }
 
