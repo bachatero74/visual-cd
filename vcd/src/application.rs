@@ -92,7 +92,6 @@ impl Application {
         Ok(())
     }
 
-    // TODO: zweryfikować pozycję kursora, czy nie wyjeżdża poza zakres
     fn render_tree_view(&mut self) {
         fn add_node(
             list: &mut Vec<TVItem>,
@@ -132,6 +131,10 @@ impl Application {
         self.tv_items.clear();
         let mut prevs_stack = Vec::new();
         add_node(&mut self.tv_items, &self.root.1, &mut prevs_stack, None);
+        
+        if self.cursor >= self.tv_items.len() as isize {
+            self.cursor = (self.tv_items.len() as isize - 1).max(0);
+        }
     }
 
     fn draw(&mut self, frame: &mut Frame) {
