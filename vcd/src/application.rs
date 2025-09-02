@@ -21,7 +21,7 @@ use crate::{
     structures::{FileNode, TVItem, TreeNode},
 };
 
-const V_MARGIN: i32 = 3;
+const V_MARGIN: isize = 3;
 const COLLAPSED_DIR: &str = "📁";
 const EXPANDED_DIR: &str = "📂";
 
@@ -37,8 +37,8 @@ const EXPANDED_DIR: &str = "📂";
 pub struct Application {
     root: (Option<OsString>, Rc<TreeNode>),
     tv_items: Vec<TVItem>,
-    cursor: i32,
-    display_offset: i32,
+    cursor: isize,
+    display_offset: isize,
 }
 
 impl Application {
@@ -77,7 +77,7 @@ impl Application {
                             }
                         }
                         KeyCode::Down => {
-                            if self.cursor < self.tv_items.len() as i32 - 1 {
+                            if self.cursor < self.tv_items.len() as isize - 1 {
                                 self.cursor += 1;
                             }
                         }
@@ -152,7 +152,7 @@ impl Application {
             })
             .collect();
 
-        if self.cursor >= 0 && self.cursor < items.len() as i32 {
+        if self.cursor >= 0 && self.cursor < items.len() as isize {
             items[self.cursor as usize] = items[self.cursor as usize].clone().bg(Color::Blue);
         }
 
@@ -196,7 +196,7 @@ impl Application {
     }
 
     fn calc_offset(&mut self, frame: &Frame) {
-        let height = (frame.area().height - 2) as i32;
+        let height = frame.area().height as isize - 2;
         if height > 0 {
             let location = self.cursor - self.display_offset;
             let margin = V_MARGIN.min(height / 2);
@@ -204,7 +204,7 @@ impl Application {
             if location < margin {
                 self.display_offset = (self.cursor - margin).max(0);
             } else if location >= height - margin {
-                let max_offs = (self.tv_items.len() as i32 - height).max(0);
+                let max_offs = (self.tv_items.len() as isize - height).max(0);
                 self.display_offset = (self.cursor - height + margin + 1).min(max_offs);
             }
         }
@@ -235,6 +235,6 @@ impl Application {
             .tv_items
             .iter()
             .position(|tvi| Rc::ptr_eq(&tvi.tree_node, node))
-            .unwrap_or(self.cursor as usize) as i32;
+            .unwrap_or(self.cursor as usize) as isize;
     }
 }
