@@ -21,7 +21,7 @@ use crate::{
     structures::{FileNode, TVItem, TreeNode},
 };
 
-const V_MARGIN: usize = 1;
+const V_MARGIN: i32 = 3;
 const COLLAPSED_DIR: &str = "📁";
 const EXPANDED_DIR: &str = "📂";
 
@@ -37,8 +37,8 @@ const EXPANDED_DIR: &str = "📂";
 pub struct Application {
     root: (Option<OsString>, Rc<TreeNode>),
     tv_items: Vec<TVItem>,
-    cursor: usize,
-    display_offset: usize,
+    cursor: i32,
+    display_offset: i32,
 }
 
 impl Application {
@@ -77,7 +77,7 @@ impl Application {
                             }
                         }
                         KeyCode::Down => {
-                            if self.cursor < self.tv_items.len() - 1 {
+                            if self.cursor < self.tv_items.len() as i32 - 1 {
                                 self.cursor += 1;
                             }
                         }
@@ -152,13 +152,13 @@ impl Application {
             })
             .collect();
 
-        if self.cursor < items.len() {
-            items[self.cursor] = items[self.cursor].clone().bg(Color::Blue);
+        if self.cursor >= 0 && self.cursor < items.len() as i32 {
+            items[self.cursor as usize] = items[self.cursor as usize].clone().bg(Color::Blue);
         }
 
         let current_path = self
             .tv_items
-            .get(self.cursor)
+            .get(self.cursor as usize)
             .map_or(String::from("?"), |tvi| {
                 tvi.tree_node.get_path().to_string_lossy().to_string()
             });
@@ -195,17 +195,17 @@ impl Application {
         );
     }
 
-    fn calc_offset(&mut self, frame: &Frame){
-        if frame.area().height > 2 {
+    fn calc_offset(&mut self, frame: &Frame) {
+        let height = (frame.area().height - 2) as i32;
+        if height > 0 {
             let location = self.cursor - self.display_offset;
-            let height = (frame.area().height - 2) as usize;
+            let margin = V_MARGIN.min(height / 2);
 
-            if location >= height - V_MARGIN {
-                self.display_offset = self.cursor - height + V_MARGIN + 1;
-            }
-
-            if location < V_MARGIN {
-                self.display_offset = self.cursor - V_MARGIN;
+            if location < margin {
+                self.display_offset = (self.cursor - margin).max(0);
+            } else if location >= height - margin {
+                let max_offs = (self.tv_items.len() as i32 - height).max(0);
+                self.display_offset = (self.cursor - height + margin + 1).min(max_offs);
             }
         }
     }
@@ -235,6 +235,6 @@ impl Application {
             .tv_items
             .iter()
             .position(|tvi| Rc::ptr_eq(&tvi.tree_node, node))
-            .unwrap_or(self.cursor);
+            .unwrap_or(self.cursor as usize) as i32;
     }
 }
