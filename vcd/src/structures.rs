@@ -35,8 +35,11 @@ impl TreeNode {
             if let Ok(dir_iter) =
                 read_dir(&my_path).inspect_err(|_| warn!("Failed to read {}", my_path.display()))
             {
+                let mut items = dir_iter.collect::<Vec<FileNode>>();
+                items.sort_by_key(|s| s.name.to_string_lossy().to_string().to_lowercase());
                 *opt_nodes = Some(
-                    dir_iter
+                    items
+                        .into_iter()
                         .map(|n| {
                             let mut tn = TreeNode::new(n);
                             tn.parent = Rc::downgrade(self);
