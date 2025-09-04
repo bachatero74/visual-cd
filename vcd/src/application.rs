@@ -184,8 +184,9 @@ impl Application {
             .scroll((self.display_offset as u16, 0));
         frame.render_widget(par, frame.area());
 
-        let mut scrollbar_state = ScrollbarState::new(99).position(50);
-        // .viewport_content_length(50);
+        let mut scrollbar_state = ScrollbarState::new(self.tv_items.len())
+            .position(self.display_offset as usize);
+
 
         let scroll = Scrollbar::new(ScrollbarOrientation::VerticalRight);
         frame.render_stateful_widget(
