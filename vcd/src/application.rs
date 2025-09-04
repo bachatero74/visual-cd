@@ -184,9 +184,18 @@ impl Application {
             .scroll((self.display_offset as u16, 0));
         frame.render_widget(par, frame.area());
 
-        let mut scrollbar_state = ScrollbarState::new(self.tv_items.len())
-            .position(self.display_offset as usize);
+        // let (content, pos, viewport) = prepare_params_for_stupid_scrollbar(
+        //     self.tv_items.len(),
+        //     frame.area().height as usize - 2,
+        //     self.display_offset as usize,
+        // );
 
+        // let mut scrollbar_state = ScrollbarState::new(content)
+        //     .position(pos)
+        //     .viewport_content_length(viewport);
+
+        let mut scrollbar_state =
+            ScrollbarState::new(self.tv_items.len()).position(self.display_offset as usize);
 
         let scroll = Scrollbar::new(ScrollbarOrientation::VerticalRight);
         frame.render_stateful_widget(
@@ -247,4 +256,28 @@ impl Application {
             .position(|tvi| Rc::ptr_eq(&tvi.tree_node, node))
             .unwrap_or(self.cursor as usize) as isize;
     }
+}
+
+pub fn prepare_params_for_stupid_scrollbar(
+    total_items: usize,
+    viewport_items: usize,
+    offset: usize,
+) -> (usize, usize, usize) {
+    if total_items == 0 || viewport_items == 0 {
+        return (1, 0, 1); // fallback: "pusty" pasek
+    }
+
+    let max_offset = total_items.saturating_sub(viewport_items);
+    let clamped_offset = offset.min(max_offset);
+
+    // kluczowy trik: content = total - viewport
+    let adjusted_content_len = total_items.saturating_sub(viewport_items);
+
+    // specjalny przypadek: wszystko się mieści
+    if adjusted_content_len == 0 {
+        // ustawiamy 1, żeby ratatui miało "coś", a thumb i tak pokryje całość
+        return (1, 0, 1);
+    }
+
+    (adjusted_content_len, clamped_offset, viewport_items)
 }
