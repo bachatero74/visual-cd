@@ -186,7 +186,8 @@ impl Application {
 
         let len = self.tv_items.len() as isize - (frame.area().height as isize - 2);
         if len > 0 {
-            let mut scrollbar_state = ScrollbarState::new(len as usize).position(self.display_offset as usize);
+            let mut scrollbar_state =
+                ScrollbarState::new(len as usize).position(self.display_offset as usize);
             let scroll = Scrollbar::new(ScrollbarOrientation::VerticalRight);
             frame.render_stateful_widget(
                 scroll,
