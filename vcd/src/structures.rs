@@ -88,21 +88,20 @@ impl TreeNode {
     }
 
     pub fn find_next(self: &Rc<TreeNode>, first_char: char) -> Option<Rc<TreeNode>> {
+        let fchar = first_char.to_lowercase().to_string();
         if let Some(parent) = self.parent.upgrade() {
             if let Some(ref children) = *parent.subnodes.borrow() {
                 if let Some(pos) = children.iter().position(|it| Rc::ptr_eq(it, self)) {
                     let (first, second) = children.split_at(pos);
                     let mut circular_iter = second.iter().chain(first).skip(1);
-                    if let Some(found) = circular_iter.find(|node| {
+                    let found = circular_iter.find(|node| {
                         node.file_node
                             .name
                             .to_string_lossy()
-                            .chars()
-                            .next()
-                            .map_or(false, |c| c == first_char)
-                    }) {
-                        return Some(found.clone());
-                    }
+                            .to_lowercase()
+                            .starts_with(&fchar)
+                    });
+                    return found.cloned();
                 }
             }
         }
