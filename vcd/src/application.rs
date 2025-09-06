@@ -76,13 +76,23 @@ impl Application {
                                 self.cursor -= 1;
                             }
                         }
+                        
                         KeyCode::Down => {
                             if self.cursor < self.tv_items.len() as isize - 1 {
                                 self.cursor += 1;
                             }
                         }
-                        KeyCode::Char('q') => break,
+
                         KeyCode::Enter => break,
+                        code if code >= KeyCode::Char('a') && code <= KeyCode::Char('z') => {
+                            if let Some(chr) = code.as_char() {
+                                if let Some(tvi) = self.tv_items.get(self.cursor as usize) {
+                                    if let Some(next) = &tvi.tree_node.find_next(chr) {
+                                        self.goto(next);
+                                    }
+                                }
+                            }
+                        }
                         _ => {}
                     }
                 }
@@ -248,4 +258,5 @@ impl Application {
             .position(|tvi| Rc::ptr_eq(&tvi.tree_node, node))
             .unwrap_or(self.cursor as usize) as isize;
     }
+
 }
