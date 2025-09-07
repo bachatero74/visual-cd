@@ -83,6 +83,35 @@ impl Application {
                             }
                         }
 
+                        KeyCode::Left => {
+                            if let Some(tvi) = self.tv_items.get(self.cursor as usize) {
+                                if tvi.tree_node.is_loaded() {
+                                    tvi.tree_node.unload();
+                                } else {
+                                    if let Some(parent) = tvi.tree_node.parent.upgrade() {
+                                        self.goto(&parent);
+                                    }
+                                }
+                                self.render_tree_view();
+                            }
+                        }
+
+                        KeyCode::Right => {
+                            if let Some(tvi) = self.tv_items.get(self.cursor as usize) {
+                                tvi.tree_node.load();
+                                self.render_tree_view();
+                            }
+                        }
+
+                        // KeyCode::Backspace => {
+                        //     if let Some(tvi) = self.tv_items.get(self.cursor as usize) {
+                        //         if let Some(parent) = tvi.tree_node.parent.upgrade() {
+                        //             self.goto(&parent);
+                        //             self.render_tree_view();
+                        //         }
+                        //     }
+                        // }
+
                         KeyCode::Enter => {
                             let tvi = self.tv_items.get(self.cursor as usize).ok_or_else(|| {
                                 AppError::Str(format!("Nieprawidłowy indeks {}", self.cursor))

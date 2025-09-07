@@ -16,7 +16,7 @@ pub struct FileNode {
 pub struct TreeNode {
     pub file_node: FileNode,
     pub subnodes: RefCell<Option<Vec<Rc<TreeNode>>>>,
-    parent: Weak<TreeNode>,
+    pub parent: Weak<TreeNode>,
 }
 
 impl TreeNode {
@@ -111,6 +111,10 @@ impl TreeNode {
     pub fn unload(&self) {
         let mut opt_nodes = self.subnodes.borrow_mut();
         *opt_nodes = None;
+    }
+
+    pub fn is_loaded(&self) -> bool {
+        self.subnodes.borrow().is_some()
     }
 }
 
