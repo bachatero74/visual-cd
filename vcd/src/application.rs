@@ -54,7 +54,7 @@ impl Application {
         })
     }
 
-    pub fn run(&mut self, terminal: &mut DefaultTerminal) -> Result<(), AppError> {
+    pub fn run(&mut self, terminal: &mut DefaultTerminal) -> Result<Option<String>, AppError> {
         self.root.1.load();
 
         match {
@@ -66,7 +66,7 @@ impl Application {
             Err(e) => error!("Cannot navigate to current dir: {e}"),
         }
 
-        loop {
+        let path: Option<String> = loop {
             terminal.draw(|frame| self.draw(frame))?;
             match event::read()? {
                 Event::Key(key_event) if key_event.kind == KeyEventKind::Press => {
@@ -76,14 +76,22 @@ impl Application {
                                 self.cursor -= 1;
                             }
                         }
-                        
+
                         KeyCode::Down => {
                             if self.cursor < self.tv_items.len() as isize - 1 {
                                 self.cursor += 1;
                             }
                         }
 
-                        KeyCode::Enter => break,
+                        KeyCode::Enter => {
+                            let tvi = self.tv_items.get(self.cursor as usize).ok_or_else(|| {
+                                AppError::Str(format!("Nieprawidłowy indeks {}", self.cursor))
+                            })?;
+
+                            break Some(tvi.tree_node.get_path().to_string_lossy().to_string());
+                        }
+                        KeyCode::Esc => break None,
+
                         code if code >= KeyCode::Char('a') && code <= KeyCode::Char('z') => {
                             if let Some(chr) = code.as_char() {
                                 if let Some(tvi) = self.tv_items.get(self.cursor as usize) {
@@ -98,8 +106,8 @@ impl Application {
                 }
                 _ => {}
             };
-        }
-        Ok(())
+        };
+        Ok(path)
     }
 
     fn render_tree_view(&mut self) {
@@ -258,5 +266,4 @@ impl Application {
             .position(|tvi| Rc::ptr_eq(&tvi.tree_node, node))
             .unwrap_or(self.cursor as usize) as isize;
     }
-
 }

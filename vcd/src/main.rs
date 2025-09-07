@@ -3,19 +3,31 @@ mod errors;
 mod filesystem;
 mod structures;
 
+use std::process::ExitCode;
+
 use application::Application;
 use log::info;
 
 use errors::AppError;
 use ratatui::DefaultTerminal;
 
-fn main() {
-    if let Err(err) = run() {
-        println!("{err}");
+fn main() -> ExitCode {
+    match run() {
+        Ok(path) => match path {
+            Some(path) => {
+                eprintln!("{path}");
+                ExitCode::from(0)
+            }
+            None => ExitCode::from(1),
+        },
+        Err(err) => {
+            eprintln!("{err}");
+            ExitCode::from(2)
+        }
     }
 }
 
-fn run() -> Result<(), AppError> {
+fn run() -> Result<Option<String>, AppError> {
     setup_logger()?;
     info!("App start");
     let mut terminal = Terminal::new();
