@@ -28,7 +28,7 @@ fn main() -> ExitCode {
 }
 
 fn run() -> Result<Option<String>, AppError> {
-    setup_logger()?;
+    //setup_logger()?;
     info!("App start");
     let mut terminal = Terminal::new();
     Application::new()?.run(&mut terminal.t)
