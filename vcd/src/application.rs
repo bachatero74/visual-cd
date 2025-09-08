@@ -106,8 +106,21 @@ impl Application {
 
                         KeyCode::Right => {
                             if let Some(tvi) = self.tv_items.get(self.cursor as usize) {
-                                tvi.tree_node.load();
-                                self.render_tree_view();
+                                if tvi.tree_node.is_loaded() {
+                                    let first = tvi
+                                        .tree_node
+                                        .subnodes
+                                        .borrow()
+                                        .as_ref()
+                                        .and_then(|children| children.first().cloned());
+
+                                    if let Some(child) = first {
+                                        self.goto(&child);
+                                    }
+                                } else {
+                                    tvi.tree_node.load();
+                                    self.render_tree_view();
+                                }
                             }
                         }
 
