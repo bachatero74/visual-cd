@@ -5,7 +5,7 @@ use std::{
     rc::Rc,
 };
 
-use crossterm::event::{self, Event, KeyCode, KeyEventKind};
+use crossterm::event::{self, Event, KeyCode, KeyEventKind, KeyModifiers};
 use log::error;
 use ratatui::{
     DefaultTerminal, Frame,
@@ -72,14 +72,22 @@ impl Application {
                 Event::Key(key_event) if key_event.kind == KeyEventKind::Press => {
                     match key_event.code {
                         KeyCode::Up => {
-                            if self.cursor > 0 {
-                                self.cursor -= 1;
+                            if key_event.modifiers.contains(KeyModifiers::CONTROL) {
+                                self.display_offset -= 1;
+                            } else {
+                                if self.cursor > 0 {
+                                    self.cursor -= 1;
+                                }
                             }
                         }
 
                         KeyCode::Down => {
-                            if self.cursor < self.tv_items.len() as isize - 1 {
-                                self.cursor += 1;
+                            if key_event.modifiers.contains(KeyModifiers::CONTROL) {
+                                self.display_offset += 1;
+                            } else {
+                                if self.cursor < self.tv_items.len() as isize - 1 {
+                                    self.cursor += 1;
+                                }
                             }
                         }
 
@@ -111,7 +119,6 @@ impl Application {
                         //         }
                         //     }
                         // }
-
                         KeyCode::Enter => {
                             let tvi = self.tv_items.get(self.cursor as usize).ok_or_else(|| {
                                 AppError::Str(format!("Nieprawidłowy indeks {}", self.cursor))
