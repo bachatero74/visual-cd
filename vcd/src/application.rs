@@ -1,7 +1,7 @@
 use std::{
     env,
     ffi::OsString,
-    path::{Component, Components},
+    path::{Component, Components, PathBuf},
     rc::Rc,
 };
 
@@ -58,7 +58,8 @@ impl Application {
         self.root.1.load();
 
         match {
-            let found = self.find(&mut env::current_dir()?.components());
+            let start_dir = env::args().nth(1).map_or(env::current_dir()?, PathBuf::from);
+            let found = self.find(&mut start_dir.components());
             self.render_tree_view();
             found
         } {
