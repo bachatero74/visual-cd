@@ -58,7 +58,9 @@ impl Application {
         self.root.1.load();
 
         match {
-            let start_dir = env::args().nth(1).map_or(env::current_dir()?, PathBuf::from);
+            let start_dir = env::args()
+                .nth(1)
+                .map_or(env::current_dir()?, PathBuf::from);
             let found = self.find(&mut start_dir.components());
             self.render_tree_view();
             found
