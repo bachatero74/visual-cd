@@ -3,6 +3,7 @@ Interactive command-line tool to explore and change directories using a tree vie
 
 On Windows, add function in PowerShell:
 
+```
 function ccd {
     $startDir = (Get-Location -PSProvider FileSystem).ProviderPath
 
@@ -26,3 +27,4 @@ function ccd {
         default { if ($dir) { Write-Error $dir } else { Write-Error "vcd failed with exit code $status" } }
     }
 }
+```
