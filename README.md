@@ -28,3 +28,24 @@ function ccd {
     }
 }
 ```
+
+On Linux, add function in .bashrc
+
+```
+ccd() {
+    dir=$(vcd 2>&1 >/dev/tty)
+    status=$?
+
+    case $status in
+        0)
+            cd "$dir"
+            ;;
+        1)
+            ;;
+        *)
+            echo "$dir" >&2
+            ;;
+    esac
+}
+```
+
