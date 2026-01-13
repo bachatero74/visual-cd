@@ -57,25 +57,25 @@ ccd() {
 │├───📁 dev                                                                              █
 │├───📁 disks                                                                            ║
 │├───📂 etc                                                                              ║
-││     ├───📁 alsa                                                                         ║
-││     ├───📂 alternatives                                                                 ║
-││     ├───📂 apache2                                                                      ║
-││     │     ├───📁 conf-available                                                           ║
-││     │     └───📁 mods-available                                                           ║
-││     ├───📁 apm                                                                          ║
-││     ├───📂 apparmor                                                                     ║
-││     ├───📁 apparmor.d                                                                   ║
-││     ├───📁 apport                                                                       ║
-││     ├───📂 apt                                                                          ║
-││     │     ├───📁 apt.conf.d                                                               ║
-││     │     ├───📁 auth.conf.d                                                              ║
-││     │     ├───📁 keyrings                                                                 ║
-││     │     ├───📁 preferences.d                                                            ║
-││     │     ├───📁 preferences.d.save                                                       ║
-││     │     ├───📁 sources.list.d                                                           ║
-││     │     └───📁 trusted.gpg.d                                                            ║
-││     ├───📁 avahi                                                                        ║
-││     ├───📁 bash_completion.d                                                            ║
-││     ├───📁 binfmt.d                                                                     ▼
+││     ├───📁 alsa                                                                       ║
+││     ├───📂 alternatives                                                               ║
+││     ├───📂 apache2                                                                    ║
+││     │     ├───📁 conf-available                                                       ║
+││     │     └───📁 mods-available                                                       ║
+││     ├───📁 apm                                                                        ║
+││     ├───📂 apparmor                                                                   ║
+││     ├───📁 apparmor.d                                                                 ║
+││     ├───📁 apport                                                                     ║
+││     ├───📂 apt                                                                        ║
+││     │     ├───📁 apt.conf.d                                                           ║
+││     │     ├───📁 auth.conf.d                                                          ║
+││     │     ├───📁 keyrings                                                             ║
+││     │     ├───📁 preferences.d                                                        ║
+││     │     ├───📁 preferences.d.save                                                   ║
+││     │     ├───📁 sources.list.d                                                       ║
+││     │     └───📁 trusted.gpg.d                                                        ║
+││     ├───📁 avahi                                                                      ║
+││     ├───📁 bash_completion.d                                                          ║
+││     ├───📁 binfmt.d                                                                   ▼
 └/etc/apt/apt.conf.d─────────────────────────────────────────────────────────────────────┘
 
