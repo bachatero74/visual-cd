@@ -1,7 +1,9 @@
 # visual-cd
 
-**visual-cd** is a small terminal-based utility that lets you navigate the directory tree visually and change directories **without manually typing `cd`**.
-It works on both **Linux** and **Windows** terminals.
+**visual-cd** is a small terminal-based utility written in **Rust**, built using the **ratatui** TUI framework.
+It lets you navigate the directory tree visually and change directories **without manually typing `cd`**.
+
+The application works on both **Linux** and **Windows** terminals.
 
 ---
 
@@ -10,6 +12,7 @@ It works on both **Linux** and **Windows** terminals.
 * Visual navigation of the directory tree
 * Keyboard-driven interface
 * No need to type or copy paths
+* Built with **Rust** and **ratatui**
 * Integrates cleanly with your shell (`bash`, PowerShell)
 * Lightweight and fast
 
@@ -155,4 +158,8 @@ ccd
 
 ## License
 
-Specify your license here.
+MIT License
+
+Copyright (c) 2026
+
+
