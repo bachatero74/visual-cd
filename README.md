@@ -22,7 +22,7 @@ The application works on both **Linux** and **Windows** terminals.
 
 * **Arrow keys** – navigate through directories
 * **Any letter** – jump to the next item starting with that letter
-* **Enter** – select the directory, exit the application, and change the current directory
+* **Enter** – exit the application, and change the current directory
 * **Esc** – cancel the directory change and exit the application
   
 ---
